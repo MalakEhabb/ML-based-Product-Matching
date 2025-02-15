@@ -1,4 +1,4 @@
-##README: Product Matching Model
+## README: Product Matching Model
 
 ## Overview
 This repository contains a product matching model for Arabic product names, designed to standardize and match seller item names to marketplace names. It includes preprocessing, training, evaluation, and reusability features.
