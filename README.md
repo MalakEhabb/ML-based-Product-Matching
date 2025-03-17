@@ -53,7 +53,9 @@ final_dataset = product_matching_pipeline(
     dataset_sheet="Dataset",
     model_path="path/to/product_matching_model.pkl",
     vectorizer_path="path/to/vectorizer.pkl",
-    words_to_remove=["جديد", "قديم", "سعر", "كبير", "صغير"]
+    words_to_remove = ['شريط', 'جديد', 'قديم', 'سعر', 'سانوفي', 'افنتس', 'ابيكو', 'ج', 'س', 
+                   'العامرية', 'كبير', 'صغير', 'هام', 'مهم', 'احذر', 'يوتوبيا', 'دوا', 
+                   'ادويا', 'لا يرتجع', 'يرتجع', 'عادي', 'ميباكو']
 )
 ```
 
