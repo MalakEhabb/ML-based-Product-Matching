@@ -31,8 +31,9 @@ def clean_corpus(corpus, words_to_remove):
 
 # Load model and vectorizer
 extract_path = "product_matching_model"
-model_path = os.path.join(extract_path, "product_matching_model.pkl")
-vectorizer_path = os.path.join(extract_path, "vectorizer.pkl")
+model_path = "product_matching_model.pkl"
+vectorizer_path = "vectorizer.pkl"
+
 
 print("🔹 Loading Model & Vectorizer...")
 model = joblib.load(model_path)
