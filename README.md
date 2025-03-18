@@ -31,5 +31,10 @@ This repository contains a product matching model for Arabic product names, desi
 - A bar chart visualizes false matches categorized by confidence levels.
 - A pie chart shows the percentage of false matches above and below a threshold.
 
+## Walkthrough
+-Unzip the product_matching_model 
+-install the requirments
+-run the predict.py script
+-check the directory for the resulted excel sheet
 
 
