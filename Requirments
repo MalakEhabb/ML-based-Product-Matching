@@ -1,8 +1,0 @@
-pandas
-numpy
-scikit-learn
-joblib
-openpyxl
-
-run this in the project directory to install all required libraries before running the script:
-pip install -r requirements.txt
