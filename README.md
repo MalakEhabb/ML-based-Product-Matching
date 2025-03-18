@@ -21,17 +21,15 @@ This repository contains a product matching model for Arabic product names, desi
 - Accuracy score on the test set.
 - Cross-validation score with 5 folds.
 
-## Model Saving and Reusage
+## Model Saving 
 - The trained model and vectorizer are saved using `joblib`.
-- A pipeline function allows loading the model and applying it to new datasets.
-- Predictions are made, and confidence scores are generated.
-- Predicted product matches are assigned SKUs from a master file.
 
 ## Visualization
 - A bar chart visualizes false matches categorized by confidence levels.
 - A pie chart shows the percentage of false matches above and below a threshold.
 
-## Walkthrough
+## Walkthrough for model reusage
+- Download the repository
 - Unzip the product_matching_model 
 - install the requirments
 - run the predict.py script
