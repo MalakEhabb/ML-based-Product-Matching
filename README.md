@@ -31,31 +31,7 @@ This repository contains a product matching model for Arabic product names, desi
 - A bar chart visualizes false matches categorized by confidence levels.
 - A pie chart shows the percentage of false matches above and below a threshold.
 
-## Usage
-1. Load the model and vectorizer.
-2. Apply preprocessing to new product data.
-3. Predict the closest marketplace product.
-4. Evaluate results and visualize false matches.
 
-## Requirements
-- Python
-- pandas
-- numpy
-- scikit-learn
-- matplotlib
-- joblib
-
-## Running the Model
-```python
-final_dataset = product_matching_pipeline(
-    excel_file_path="path/to/excel.xlsx",
-    masterfile_sheet="Master File",
-    dataset_sheet="Dataset",
-    model_path="path/to/product_matching_model.pkl",
-    vectorizer_path="path/to/vectorizer.pkl",
-    words_to_remove = ['شريط', 'جديد', 'قديم', 'سعر', 'سانوفي', 'افنتس', 'ابيكو', 'ج', 'س', 
-                   'العامرية', 'كبير', 'صغير', 'هام', 'مهم', 'احذر', 'يوتوبيا', 'دوا', 
-                   'ادويا', 'لا يرتجع', 'يرتجع', 'عادي', 'ميباكو']
 )
 ```
 
