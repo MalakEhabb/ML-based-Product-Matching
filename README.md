@@ -35,4 +35,7 @@ This repository contains a product matching model for product names, designed to
 - run the predict.py script
 - check the directory for the resulted excel sheet
 
-
+## Example usage 
+```bash
+python predict.py <file.xlsx> <MasterSheet> <DatasetSheet>
+```
