@@ -26,31 +26,31 @@ def clean_corpus(corpus, words_to_remove):
     return cleaned_corpus
 
 def match_products(input_excel):
-    # Load trained model and vectorizer
+    print("Loading model and vectorizer...")
     model = joblib.load('model.pkl')
     vectorizer = joblib.load('vectorizer.pkl')
-    
-    # Read input data
+
+    print(f"Reading input file: {input_excel}")
     df = pd.read_excel(input_excel)
+
     if 'seller_item_name' not in df.columns:
         raise ValueError("Input Excel must contain 'seller_item_name' column")
     
-    # Preprocess text
+    print("Cleaning text...")
     words_to_remove = ['شريط', 'جديد', 'قديم', 'سعر', 'سانوفي', 'افنتس', 'ابيكو', 'ج', 'س',
                        'العامرية', 'كبير', 'صغير', 'هام', 'مهم', 'احذر', 'يوتوبيا', 'دوا',
                        'ادويا', 'لا يرتجع', 'يرتجع', 'عادي', 'ميباكو']
     df['seller_item_name_clean'] = clean_corpus(df['seller_item_name'].astype(str), words_to_remove)
     
-    # Transform text
+    print("Transforming text...")
     X = vectorizer.transform(df['seller_item_name_clean'])
     
-    # Predict matches
+    print("Predicting matches...")
     df['predicted_marketplace_name'] = model.predict(X)
     
-    # Save results
     output_excel = input_excel.replace('.xlsx', '_matched.xlsx')
+    print(f"Saving results to {output_excel}")
     df[['seller_item_name', 'predicted_marketplace_name']].to_excel(output_excel, index=False)
-    print(f"Matching complete. Results saved to {output_excel}")
 
-# Example usage
-# match_products('input.xlsx')
+    print("Matching complete.")
+
