@@ -40,9 +40,9 @@ def process_excel(file_path, master_sheet, dataset_sheet):
     df_dataset['seller_item_name_clean'] = clean_corpus(df_dataset['seller_item_name'].astype(str), words_to_remove)
     
     # Load pre-trained vectorizer and model from the same directory
-    vectorizer = joblib.load("vectorizer.pkl")
-    encoder = joblib.load("encoder.pkl")
-    model = load_model("model.h5")
+    vectorizer = joblib.load("vectorizer/vectorizer.pkl")
+    encoder = joblib.load("encoder/encoder.pkl")
+    model = load_model("model/model.h5")
     
     # Transform input data
     X = vectorizer.transform(df_dataset['seller_item_name_clean']).toarray()
