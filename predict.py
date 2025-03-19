@@ -74,7 +74,7 @@ def product_matching_pipeline(excel_file_path, masterfile_sheet, dataset_sheet, 
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python matcher.py <file.xlsx> <MasterSheet> <DatasetSheet>")
+        print("Usage: python predict.py <file.xlsx> <MasterSheet> <DatasetSheet>")
         sys.exit(1)
     
     input_file = sys.argv[1]
