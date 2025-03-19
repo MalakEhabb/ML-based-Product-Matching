@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import tensorflow as tf
+import time
 from sklearn.feature_extraction.text import TfidfVectorizer
 from tensorflow.keras.models import load_model
 
@@ -38,21 +39,42 @@ def process_excel(file_path, master_sheet, dataset_sheet):
     df_dataset = pd.read_excel(file_path, sheet_name=dataset_sheet)
     
     df_dataset['seller_item_name_clean'] = clean_corpus(df_dataset['seller_item_name'].astype(str), words_to_remove)
+    df_master['marketplace_name_clean'] = clean_corpus(df_master['marketplace_product_name_ar'].astype(str), words_to_remove)
     
     # Load pre-trained vectorizer and model from the same directory
-    vectorizer = joblib.load("vectorizer/vectorizer.pkl")
-    encoder = joblib.load("encoder/encoder.pkl")
-    model = load_model("model/product_matching_nn_model.h5")
+    vectorizer = joblib.load("vectorizer.pkl")
+    encoder = joblib.load("encoder.pkl")
+    model = load_model("model.h5")
     
     # Transform input data
     X = vectorizer.transform(df_dataset['seller_item_name_clean']).toarray()
     
-    # Predict
-    y_pred = np.argmax(model.predict(X), axis=1)
-    df_dataset['predicted_category'] = encoder.inverse_transform(y_pred)
+    processing_times = []
+    matched_skus = []
     
-    df_dataset.to_csv('matched_results.csv', index=False)
-    print("Processing complete. Results saved as 'matched_results.csv'")
+    # Predict
+    for index, row in df_dataset.iterrows():
+        start_time = time.time()
+        pred_vector = vectorizer.transform([row['seller_item_name_clean']]).toarray()
+        y_pred = np.argmax(model.predict(pred_vector), axis=1)
+        predicted_name = encoder.inverse_transform(y_pred)[0]
+        df_dataset.at[index, 'predicted_category'] = predicted_name
+        
+        # Find corresponding SKU
+        matched_row = df_master[df_master['marketplace_name_clean'] == predicted_name]
+        sku = matched_row['sku'].values[0] if not matched_row.empty else "Not Found"
+        df_dataset.at[index, 'matched_sku'] = sku
+        
+        end_time = time.time()
+        processing_times.append(end_time - start_time)
+        matched_skus.append(sku)
+    
+    df_dataset['processing_time'] = processing_times
+    
+    # Save results to Excel
+    output_file = 'matched_results.xlsx'
+    df_dataset.to_excel(output_file, index=False)
+    print(f"Processing complete. Results saved as '{output_file}'")
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
