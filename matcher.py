@@ -70,8 +70,11 @@ def process_excel(file_path, master_sheet, dataset_sheet):
         matched_skus.append(sku)
     
     df_dataset['processing_time'] = processing_times
-    df_dataset.to_csv('matched_results.csv', index=False)
-    print("Processing complete. Results saved as 'matched_results.csv'")
+    
+    # Save results to Excel
+    output_file = 'matched_results.xlsx'
+    df_dataset.to_excel(output_file, index=False)
+    print(f"Processing complete. Results saved as '{output_file}'")
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
