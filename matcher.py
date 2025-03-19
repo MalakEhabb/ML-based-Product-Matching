@@ -42,7 +42,7 @@ def process_excel(file_path, master_sheet, dataset_sheet):
     # Load pre-trained vectorizer and model from the same directory
     vectorizer = joblib.load("vectorizer/vectorizer.pkl")
     encoder = joblib.load("encoder/encoder.pkl")
-    model = load_model("model/model.h5")
+    model = load_model("model/product_matching_nn_model.h5")
     
     # Transform input data
     X = vectorizer.transform(df_dataset['seller_item_name_clean']).toarray()
