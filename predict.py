@@ -31,8 +31,8 @@ def clean_corpus(corpus, words_to_remove):
 
 # Load model and vectorizer
 extract_path = "product_matching_model"
-model_path = r"C:\Users\IT SHOP\Downloads\Compressed\ML-based-Product-Matching-main\ML-based-Product-Matching-main\product_matching_model\product_matching_model.pkl"
-vectorizer_path = r"C:\Users\IT SHOP\Downloads\Compressed\ML-based-Product-Matching-main\ML-based-Product-Matching-main\vectorizer.pkl"
+model_path = r"product_matching_model\product_matching_model.pkl"
+vectorizer_path = r"vectorizer.pkl"
 
 
 print("🔹 Loading Model & Vectorizer...")
