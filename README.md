@@ -26,7 +26,7 @@ This repository contains a product matching model for Arabic product names, desi
 
 ## Visualization
 - A bar chart visualizes false matches categorized by confidence levels.
-- A pie chart shows the percentage of false matches above and below a threshold.
+- A pie chart shows the percentage of false matches above and below the threshold.
 
 ## Walkthrough for model reusage
 - Download the repository
