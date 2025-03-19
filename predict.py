@@ -4,6 +4,11 @@ import joblib
 import re
 import time
 import os
+import sklearn
+
+# Ensure scikit-learn version 1.2.2 is used
+if sklearn.__version__ != "1.2.2":
+    raise ImportError("This script requires scikit-learn version 1.2.2. Please install it using: pip install scikit-learn==1.2.2")
 
 def normalize_arabic(text):
     if not isinstance(text, str):
@@ -30,20 +35,18 @@ def clean_corpus(corpus, words_to_remove):
     return cleaned_corpus
 
 # Load model and vectorizer
-extract_path = "product_matching_model"
 model_path = "product_matching_model/product_matching_model.pkl"
 vectorizer_path = "vectorizer.pkl"
-
 
 print("🔹 Loading Model & Vectorizer...")
 model = joblib.load(model_path)
 vectorizer = joblib.load(vectorizer_path)
 
-def product_matching_pipeline(excel_file_path, masterfile_sheet, dataset_sheet, words_to_remove):
+def product_matching_pipeline(testing_file_path, masterfile_sheet, dataset_sheet, words_to_remove):
     print("🔹 Loading Excel File...")
     try:
-        masterfile = pd.read_excel(excel_file_path, sheet_name=masterfile_sheet)
-        dataset = pd.read_excel(excel_file_path, sheet_name=dataset_sheet)
+        masterfile = pd.read_excel(testing_file_path, sheet_name=masterfile_sheet)
+        dataset = pd.read_excel(testing_file_path, sheet_name=dataset_sheet)
     except Exception as e:
         print(f"❌ Error loading Excel file: {e}")
         return None
@@ -85,14 +88,14 @@ if __name__ == "__main__":
         'العامرية', 'كبير', 'صغير', 'هام', 'مهم', 'احذر', 'يوتوبيا', 'دوا', 
         'ادويا', 'لا يرتجع', 'يرتجع', 'عادي', 'ميباكو']
 
-    input_file = "Product Matching Dataset.xlsx"
+    testing_file = input("📂 Enter the path of the testing Excel file: ")
     output_file = "final_matched_dataset.xlsx"
 
     print("🚀 Starting Product Matching Process...")
     start_time = time.time()
 
     final_dataset = product_matching_pipeline(
-        excel_file_path=input_file,
+        testing_file_path=testing_file,
         masterfile_sheet="Master File",
         dataset_sheet="Dataset",
         words_to_remove=words_to_remove
