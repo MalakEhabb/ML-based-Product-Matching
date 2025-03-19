@@ -1,15 +1,17 @@
-import re
 import pandas as pd
+import numpy as np
 import joblib
-from sklearn.feature_extraction.text import TfidfVectorizer
+import re
+import time
+import os
 
 def normalize_arabic(text):
     if not isinstance(text, str):
         return text
     text = re.sub(r'[\u064B-\u065F]', '', text)  # Remove tashkeel
-    text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")  # Normalize أ
-    text = text.replace("ة", "ه")  # Normalize ة
-    text = text.replace("ي", "ى")  # Normalize ي
+    text = text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")
+    text = text.replace("ة", "ه")
+    text = text.replace("ي", "ى")
     return text
 
 def clean_corpus(corpus, words_to_remove):
@@ -22,35 +24,85 @@ def clean_corpus(corpus, words_to_remove):
                 pattern = r'\b' + re.sub(r'(.)\1*', r'\1+', re.escape(word)) + r'\b'
                 text = re.sub(pattern, '', text, flags=re.IGNORECASE | re.UNICODE)
             text = re.sub(r'\s+', ' ', text).strip()
+        else:
+            text = ""
         cleaned_corpus.append(text)
     return cleaned_corpus
 
-def match_products(input_excel):
-    print("Loading model and vectorizer...")
-    model = joblib.load('model.pkl')
-    vectorizer = joblib.load('vectorizer.pkl')
+# Load model and vectorizer
+extract_path = "product_matching_model"
+model_path = "product_matching_model/product_matching_model.pkl"
+vectorizer_path = "vectorizer.pkl"
 
-    print(f"Reading input file: {input_excel}")
-    df = pd.read_excel(input_excel)
 
-    if 'seller_item_name' not in df.columns:
-        raise ValueError("Input Excel must contain 'seller_item_name' column")
-    
-    print("Cleaning text...")
-    words_to_remove = ['شريط', 'جديد', 'قديم', 'سعر', 'سانوفي', 'افنتس', 'ابيكو', 'ج', 'س',
-                       'العامرية', 'كبير', 'صغير', 'هام', 'مهم', 'احذر', 'يوتوبيا', 'دوا',
-                       'ادويا', 'لا يرتجع', 'يرتجع', 'عادي', 'ميباكو']
-    df['seller_item_name_clean'] = clean_corpus(df['seller_item_name'].astype(str), words_to_remove)
-    
-    print("Transforming text...")
-    X = vectorizer.transform(df['seller_item_name_clean'])
-    
-    print("Predicting matches...")
-    df['predicted_marketplace_name'] = model.predict(X)
-    
-    output_excel = input_excel.replace('.xlsx', '_matched.xlsx')
-    print(f"Saving results to {output_excel}")
-    df[['seller_item_name', 'predicted_marketplace_name']].to_excel(output_excel, index=False)
+print("🔹 Loading Model & Vectorizer...")
+model = joblib.load(model_path)
+vectorizer = joblib.load(vectorizer_path)
 
-    print("Matching complete.")
+def product_matching_pipeline(excel_file_path, masterfile_sheet, dataset_sheet, words_to_remove):
+    print("🔹 Loading Excel File...")
+    try:
+        masterfile = pd.read_excel(excel_file_path, sheet_name=masterfile_sheet)
+        dataset = pd.read_excel(excel_file_path, sheet_name=dataset_sheet)
+    except Exception as e:
+        print(f"❌ Error loading Excel file: {e}")
+        return None
 
+    required_master_cols = {'product_name_ar', 'sku'}
+    required_dataset_cols = {'seller_item_name', 'marketplace_product_name_ar'}
+
+    if not required_master_cols.issubset(masterfile.columns):
+        print(f"❌ Missing columns in Master File: {required_master_cols - set(masterfile.columns)}")
+        return None
+    if not required_dataset_cols.issubset(dataset.columns):
+        print(f"❌ Missing columns in Dataset: {required_dataset_cols - set(dataset.columns)}")
+        return None
+
+    print("🔹 Cleaning Text Data...")
+    masterfile['marketplace_name_clean'] = clean_corpus(masterfile['product_name_ar'].astype(str), words_to_remove)
+    dataset['seller_item_name_clean'] = clean_corpus(dataset['seller_item_name'].astype(str), words_to_remove)
+    dataset['marketplace_name_clean'] = clean_corpus(dataset['marketplace_product_name_ar'].astype(str), words_to_remove)
+
+    print("🔹 Transforming Data...")
+    X_dataset = vectorizer.transform(dataset['seller_item_name_clean'])
+
+    print("🔹 Predicting Matches...")
+    y_pred_dataset = model.predict(X_dataset)
+    y_pred_proba = model.predict_proba(X_dataset)
+    confidence_scores = np.max(y_pred_proba, axis=1)
+
+    dataset['predicted_marketplace_name'] = y_pred_dataset
+    dataset['confidence_score'] = confidence_scores
+
+    sku_map = masterfile.set_index('marketplace_name_clean')['sku'].to_dict()
+    dataset['matched_sku'] = dataset['predicted_marketplace_name'].apply(lambda x: sku_map.get(x, 'Not Found'))
+
+    dataset = dataset.drop(columns=['seller_item_name_clean', 'marketplace_name_clean', 'predicted_marketplace_name'])
+    return dataset
+
+if __name__ == "__main__":
+    words_to_remove = ['شريط', 'جديد', 'قديم', 'سعر', 'سانوفي', 'افنتس', 'ابيكو', 'ج', 'س', 
+        'العامرية', 'كبير', 'صغير', 'هام', 'مهم', 'احذر', 'يوتوبيا', 'دوا', 
+        'ادويا', 'لا يرتجع', 'يرتجع', 'عادي', 'ميباكو']
+
+    input_file = "Product Matching Dataset.xlsx"
+    output_file = "final_matched_dataset.xlsx"
+
+    print("🚀 Starting Product Matching Process...")
+    start_time = time.time()
+
+    final_dataset = product_matching_pipeline(
+        excel_file_path=input_file,
+        masterfile_sheet="Master File",
+        dataset_sheet="Dataset",
+        words_to_remove=words_to_remove
+    )
+
+    end_time = time.time()
+
+    if final_dataset is not None:
+        final_dataset.to_excel(output_file, index=False)
+        print(f"✅ Processing completed in {end_time - start_time:.2f} seconds.")
+        print(f"📂 Results saved in {output_file}")
+    else:
+        print("❌ Error: Could not process the dataset.")
