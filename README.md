@@ -18,7 +18,7 @@ This repository contains a product matching model for Arabic product names, desi
 - Model training using the transformed data.
 
 ## Model Evaluation
-- Accuracy score on the test set.
+- Accuracy score on the test set (98%).
 - Cross-validation score with 5 folds.
 
 ## Model Saving 
