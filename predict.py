@@ -55,7 +55,7 @@ def product_matching_pipeline(excel_file_path, masterfile_sheet, dataset_sheet, 
 
     print("🔹 Transforming Data...")
     model = joblib.load("product_matching_model/product_matching_model.pkl")
-    vectorizer = joblib.load("vectorizer.pkl")
+    vectorizer = joblib.load("vectorizer/vectorizer.pkl")
     X_dataset = vectorizer.transform(dataset['seller_item_name_clean'])
 
     print("🔹 Predicting Matches...")
