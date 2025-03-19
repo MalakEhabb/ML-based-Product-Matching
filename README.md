@@ -30,8 +30,8 @@ This repository contains a product matching model for product names, designed to
 
 ## Walkthrough for model reusage
 - Download the repository
-- Unzip the product_matching_model 
-- install the requirments
+- Unzip the product_matching_model and the vectorizer 
+- install the requirments.txt
 - run the predict.py script
 - check the directory for the resulted excel sheet
 

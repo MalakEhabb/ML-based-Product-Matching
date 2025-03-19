@@ -3,7 +3,7 @@ import numpy as np
 import joblib
 import re
 import time
-import os
+import sys
 
 def normalize_arabic(text):
     if not isinstance(text, str):
@@ -28,16 +28,6 @@ def clean_corpus(corpus, words_to_remove):
             text = ""
         cleaned_corpus.append(text)
     return cleaned_corpus
-
-# Load model and vectorizer
-extract_path = "product_matching_model"
-model_path = r"product_matching_model\product_matching_model.pkl"
-vectorizer_path = r"vectorizer.pkl"
-
-
-print("🔹 Loading Model & Vectorizer...")
-model = joblib.load(model_path)
-vectorizer = joblib.load(vectorizer_path)
 
 def product_matching_pipeline(excel_file_path, masterfile_sheet, dataset_sheet, words_to_remove):
     print("🔹 Loading Excel File...")
@@ -64,6 +54,8 @@ def product_matching_pipeline(excel_file_path, masterfile_sheet, dataset_sheet, 
     dataset['marketplace_name_clean'] = clean_corpus(dataset['marketplace_product_name_ar'].astype(str), words_to_remove)
 
     print("🔹 Transforming Data...")
+    model = joblib.load("product_matching_model/product_matching_model.pkl")
+    vectorizer = joblib.load("vectorizer.pkl")
     X_dataset = vectorizer.transform(dataset['seller_item_name_clean'])
 
     print("🔹 Predicting Matches...")
@@ -81,28 +73,30 @@ def product_matching_pipeline(excel_file_path, masterfile_sheet, dataset_sheet, 
     return dataset
 
 if __name__ == "__main__":
+    if len(sys.argv) != 4:
+        print("Usage: python matcher.py <file.xlsx> <MasterSheet> <DatasetSheet>")
+        sys.exit(1)
+    
+    input_file = sys.argv[1]
+    master_sheet = sys.argv[2]
+    dataset_sheet = sys.argv[3]
+    output_file = "final_matched_dataset.xlsx"
+    
     words_to_remove = ['شريط', 'جديد', 'قديم', 'سعر', 'سانوفي', 'افنتس', 'ابيكو', 'ج', 'س', 
         'العامرية', 'كبير', 'صغير', 'هام', 'مهم', 'احذر', 'يوتوبيا', 'دوا', 
         'ادويا', 'لا يرتجع', 'يرتجع', 'عادي', 'ميباكو']
-
-    input_file = "Product Matching Dataset.xlsx"
-    output_file = "final_matched_dataset.xlsx"
-
+    
     print("🚀 Starting Product Matching Process...")
     start_time = time.time()
-
-    final_dataset = product_matching_pipeline(
-        excel_file_path=input_file,
-        masterfile_sheet="Master File",
-        dataset_sheet="Dataset",
-        words_to_remove=words_to_remove
-    )
-
+    
+    final_dataset = product_matching_pipeline(input_file, master_sheet, dataset_sheet, words_to_remove)
+    
     end_time = time.time()
-
+    
     if final_dataset is not None:
         final_dataset.to_excel(output_file, index=False)
         print(f"✅ Processing completed in {end_time - start_time:.2f} seconds.")
         print(f"📂 Results saved in {output_file}")
     else:
         print("❌ Error: Could not process the dataset.")
+
