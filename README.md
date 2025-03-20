@@ -32,10 +32,10 @@ This repository contains a product matching model for product names, designed to
 - Download the repository
 - Unzip the product_matching_model and the vectorizer 
 - install the requirments.txt
-- run the predict.py script
+- run the match.py script
 - check the directory for the resulted excel sheet
 
 ## Example usage 
 ```bash
-python predict.py <file.xlsx> <MasterSheet> <DatasetSheet>
+python match.py <file.xlsx> <MasterSheet> <DatasetSheet>
 ```
