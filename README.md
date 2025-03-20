@@ -9,7 +9,7 @@ This repository contains a product matching model for product names, designed to
 - Cleaning seller item names and marketplace product names.
 
 ## Vectorization
-- Using `TfidfVectorizer` with character n-grams (2-3 grams) and a maximum of 6000 features.
+- Using `TfidfVectorizer` with character n-grams (2-3 grams) and a maximum of 3000 features.
 - Converts cleaned text data into numerical vectors for machine learning.
 
 ## Model Training
