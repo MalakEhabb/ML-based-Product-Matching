@@ -14,11 +14,11 @@ This repository contains a product matching model for product names, designed to
 
 ## Model Training
 - Train-test split (80-20 split).
-- Model: `RandomForestClassifier` with 100 estimators and a fixed random seed.
+- Model: `RandomForestClassifier` with 50 estimators and a fixed random seed.
 - Model training using the transformed data.
 
 ## Model Evaluation
-- Accuracy score on the test set (98%).
+- Accuracy score on the test set (92%).
 - Cross-validation score with 5 folds.
 
 ## Model Saving 
