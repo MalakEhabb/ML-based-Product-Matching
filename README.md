@@ -18,7 +18,7 @@ This repository contains a product matching model for product names, designed to
 - Model training using the transformed data.
 
 ## Model Evaluation
-- Accuracy score based on sku matching (93%).
+- Accuracy score based on sku matching (93.8%).
 - Cross-validation score with 5 folds.
 
 ## Model Saving 
